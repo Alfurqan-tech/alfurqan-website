@@ -1,0 +1,423 @@
+.pricingCard { 
+  text-align: center; 
+  border: 2px solid;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f9f9f9;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 1;
+  transform: scale(1);
+  box-shadow: 0 4px 8px rgba(24, 23, 23, 0.1);
+  display: flex;
+  flex-direction: column; /* Ensure content stacks vertically */
+  min-height: 100%; /* Fill the available height */
+}   
+
+.pricingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* .pricingCard {
+  position: relative;
+  margin: 10px;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: scale(1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 1;
+} */
+
+.pricingCard:hover {
+  transform: scale(1.05); /* Scale the entire card on hover */
+  box-shadow: 0 10px 20px rgba(17, 17, 17, 0.3);
+  z-index: 10; /* Bring the card to the front */
+}
+
+.header {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.body {
+  margin-top: 10px;
+}
+
+.featureList {
+  list-style: none;
+  padding: 0;
+}
+
+.featureItem {
+  margin: 5px 0;
+  display: flex;
+  align-items: center;
+}
+
+.tick {
+  color: green;
+  margin-right: 5px;
+}
+
+.cross {
+  color: red;
+  margin-right: 5px;
+}
+
+
+/* Small box styling */
+.smallBox {
+  padding: 8px 86px;
+  position: absolute;
+  top: -55px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 15px; /* Rounded corners */
+  text-align: center;
+  border: 2px solid transparent;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+  color: white;
+  transition: transform 0.3s ease, background 0.5s ease; /* Smooth transition for hover effects */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: pulse 2s infinite; /* Pulsing animation */
+}
+
+/* Pulsing animation */
+@keyframes pulse {
+  0% {
+    transform: translateX(-50%) scale(1);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.1); /* Slightly enlarge */
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.3); /* Increase shadow intensity */
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Add the arrow inside the smallBox */
+.smallBox::after {
+  content: '';
+  position: absolute;
+  bottom: -10px; /* Position the arrow below the box */
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 10px solid rgb(16, 16, 16); /* Arrow color */
+  transition: border-top-color 0.3s ease;
+}
+
+/* Hover effect */
+.smallBox:hover {
+  animation: glow 0.6s infinite alternate; /* Glow animation on hover */
+  background: linear-gradient(90deg, #e74c3c, #f1c40f); /* Change gradient on hover */
+}
+
+/* Glow animation */
+@keyframes glow {
+  from {
+    box-shadow: 0px 8px 16px rgba(255, 223, 186, 0.6);
+  }
+  to {
+    box-shadow: 0px 12px 24px rgba(255, 152, 0, 0.8);
+  }
+}
+
+/* Hover effect for the arrow */
+.smallBox:hover::after {
+  border-top-color: #f1c40f; /* Change arrow color */
+}
+
+
+/* ELITE style */
+.eliteBox {
+  border-color: #9d9292; /* Warm orange border */
+  /* background-color: #f44336; */
+}
+
+.eliteText {
+  font-size: 16px;
+  font-weight: bold;
+  color: #9d9292; /* Matching text color */
+  letter-spacing: 1px;
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+/* PREMIUM style */
+.premiumBox {
+  border-color: #f3e24d; /* Cool blue border */
+}
+
+.premiumText {
+  font-size: 16px;
+  font-weight: bold;
+  color: #f3e24d; /* Matching text color */
+  letter-spacing: 1px;
+  font-family: 'Helvetica Neue', sans-serif;
+}
+
+
+.hiddenText {
+  display: none;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap; /* Ensure cards wrap to the next row if needed */
+  justify-content: space-between; /* Adjust spacing between cards */
+} 
+
+.col-lg-3,
+.col-md-6 {
+  display: flex;
+  flex: 1 1 calc(25% - 20px); /* Equal width for 4 columns */
+  margin-bottom: 20px;
+}
+
+.header {
+  position: relative;
+  color: #fff;
+  padding: 20px;
+  text-align: left;
+}  
+
+.eliteImageOutside {
+  position: absolute;
+  left: -103px;
+  top: -96px;
+  width: 300px;
+  height: auto;
+  margin-left: 48px;
+  object-fit: contain;
+  z-index: 1;
+  transform: scale(1); /* Default scale for the image */
+  transition: transform 0.3s ease; /* Smooth hover effect for the image */
+} 
+
+.pricingCard:hover .eliteImageOutside {
+  transform: scale(1.05); /* Scale the image slightly on hover */
+}
+
+.premiumImageOutside{
+  position: absolute;
+  left: -85px;
+  top: -114px;
+  width: 300px;
+  height: auto;
+  margin-left: 48px;
+  object-fit: contain;
+  z-index: 1;
+}
+
+.standardImageOutside{
+  position: absolute;
+  left: -91px;
+  top: -80px;
+  width: 300px;
+  height: auto;
+  margin-left: 48px;
+  object-fit: contain;
+  z-index: 1;
+}
+
+.basicImageOutside{
+ position: absolute;
+    left: -84px;
+    top: -61px;
+    width: 300px;
+    height: auto;
+    margin-left: 48px;
+    object-fit: contain;
+    z-index: 1;
+}
+
+/* .header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}  */
+.header h3 {
+  position: absolute;
+  /* bottom: -10px; */
+  /* left: -2px; */
+  /* background-color: #020b16; */
+  /* color: #fff; */
+  padding: 10px 30px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  border-radius: 0 0 5px 5px;
+  clip-path: polygon(0 100%, 100% 100%, calc(100% - 15px) 0, 0% 0);
+}
+
+.header p {
+  margin: 5px 0 0;
+  font-size: 16px;
+}
+
+.tierShape {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 110%;
+  height: 78px;
+  background: inherit;
+  clip-path: polygon(0 0, 85% 0, 100% 100%, 0% 100%);
+  z-index: -1;
+}
+
+.body {
+  flex-grow: 1; /* Make the body section take up remaining space */
+  /* padding: 20px; */
+  background: #fff;
+  text-align: left;
+}
+
+.body h6 {
+  display: block;
+  background-color: #121111;
+  border: 1px solid #ddd;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-weight: bold;
+  color: #f7f3f3;
+  margin: 15px auto;
+  text-align: center;
+  width: fit-content;
+  font-size: 15px;
+}
+
+.body ul {
+  list-style: none; 
+  font-size: 14px;
+  padding: 0;
+  margin: 10px 0;
+  display: flex; /* Make the items align in one line */
+  flex-wrap: wrap; /* Allow wrapping to the next line if needed */
+  gap: 10px; /* Add space between items */
+  text-align: left;
+}
+
+/* .tierImage{
+  margin-right: 200px;
+} */
+
+
+
+.cardImageWrapper {
+  text-align: center;
+}
+
+.cardImage {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+
+.body ul li {
+  position: relative; /* Ensure the pseudo-elements are positioned correctly */
+  padding-left: 30px; 
+  color:#101010; 
+} 
+
+
+/* Icon container */
+.body ul li::before {
+  content: ""; /* Placeholder for tick or cross */
+  position: absolute; /* Position icon relative to list item */
+  left: 0; 
+  top: 50%; /* Center vertically */
+  transform: translateY(-50%); /* Adjust for vertical alignment */
+  width: 16px; /* Icon width */
+  height: 16px; /* Icon height */
+  display: flex; /* Center content within the container */
+  align-items: center; /* Vertical alignment */
+  justify-content: center; /* Horizontal alignment */
+  border-radius: 50%; /* Round shape for the icon background */
+  font-size: 12px; /* Icon font size */
+}
+
+/* PricingTable.module.css */
+
+/* PricingTable.module.css */
+
+.tick {
+  display: inline-flex; /* Ensures proper alignment with text */
+  justify-content: center; /* Centers the symbol */
+  align-items: center; /* Centers the symbol */
+  color: #fff; /* White tick mark */
+  background-color: #4caf50; /* Green background */
+  border-radius: 50%; /* Circular shape */
+  width: 15px; /* Adjust icon width */
+  height: 15px; /* Adjust icon height */
+  margin-right: 10px; /* Space between the icon and text */
+  font-size: 10px; /* Font size of the tick */
+  font-weight: bold; /* Makes the tick mark more visible */ 
+
+}
+
+.cross {
+  display: inline-flex; /* Ensures proper alignment with text */
+  justify-content: center; /* Centers the symbol */
+  align-items: center; /* Centers the symbol */
+  color: #fff; /* White cross mark */
+  background-color: #f44336; /* Red background */
+  border-radius: 50%; /* Circular shape */
+  width: 15px; /* Adjust icon width */
+  height: 15px; /* Adjust icon height */
+  margin-right: 10px; /* Space between the icon and text */
+  font-size: 10px; /* Font size of the cross */
+  font-weight: bold; /* Makes the cross mark more visible */
+}
+
+
+
+.hidden {
+  display: none;
+}
+
+
+/* Tick icon styling */
+.body ul li.tick::before {
+  content: "✔"; /* Tick symbol */
+  color: #fff; /* Icon color */
+  background-color: #4caf50; /* Green background */
+  border-radius: 50%; /* Optional: to make the icon circular */
+  padding: 3px; /* Optional: space around the icon */
+  margin-right: 10px; /* Space between the icon and text */
+  font-size: 14px; /* Adjust icon size */
+}
+
+/* Cross icon styling */
+.body ul li.cross::before {
+  content: "✖"; /* Cross symbol */
+  color: #fff; /* Icon color */
+  background-color: #f44336; /* Red background */
+  border-radius: 50%; /* Optional: to make the icon circular */
+  padding: 3px; /* Optional: space around the icon */
+  margin-right: 10px; /* Space between the icon and text */
+  font-size: 14px; /* Adjust icon size */
+}
+
+
+.body p {
+  font-size: 14px;
+  color: #121212; 
+  margin: 25px 0 0;
+  text-align: center;
+  
+}
+
+.pricingContainer {
+  padding: 70px 0;
+} 
+

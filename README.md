@@ -1,1 +1,1 @@
-# alfurqan-website
+# Alfurqa
