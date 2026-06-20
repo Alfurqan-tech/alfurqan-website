@@ -38,9 +38,10 @@ const MultiStepForm = () => {
     Intl.DateTimeFormat().resolvedOptions().timeZone
   );
   const countriesCities = require("countries-cities");
-const [studentList, setStudentList] = useState([]);
+  const [studentList, setStudentList] = useState([]);
 
   // Basic Information States
+  const [trialFor, setTrialFor] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -80,11 +81,46 @@ const [studentList, setStudentList] = useState([]);
   const [isActive, setIsActive] = useState(true);
   const [familyId, setFamilyId] = useState("");
   const [familyEmail, setFamilyEmail] = useState("");
+  const [ipAddress, setIpAddress] = useState("");
+  const [geoLocation, setGeoLocation] = useState({ city: "", region: "", country: "" });
+  const [deviceType, setDeviceType] = useState("");
 
   // Load countries once
   useEffect(() => {
     const allCountries = Country.getAllCountries();
     setCountries(allCountries);
+  }, []);
+
+  useEffect(() => {
+    console.log("Country code changed to:", countryCode);
+  }, [countryCode]);
+
+  useEffect(() => {
+    // 1. Detect Device Type
+    const detectDevice = () => {
+      const ua = navigator.userAgent;
+      if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) return "Tablet";
+      if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated/i.test(ua)) return "Mobile";
+      return "Desktop";
+    };
+    setDeviceType(detectDevice());
+
+    // 2. Fetch IP and Geo Location
+    fetch("https://ipapi.co/json/")
+      .then((res) => res.json())
+      .then((data) => {
+        setIpAddress(data.ip);
+        setGeoLocation({
+          city: data.city,
+          region: data.region,
+          country: data.country_name
+        });
+
+        // Keep your existing auto-fill sync logic:
+        setCountryCode(data.country_code.toLowerCase());
+        setCountry(data.country_name);
+      })
+      .catch((err) => console.error("Metadata fetch failed:", err));
   }, []);
 
   // Load states and cities when country changes
@@ -311,6 +347,7 @@ const [studentList, setStudentList] = useState([]);
 
       const formattedData = {
         id: uuidv4(),
+        trialFor: trialFor,
         firstName: firstName.trim().padEnd(3),
         lastName: lastName.trim().padEnd(3),
         email: email.trim().toLowerCase(),
@@ -325,8 +362,8 @@ const [studentList, setStudentList] = useState([]);
         preferredFromTime: preferredFromTime,
         preferredToTime: preferredToTime,
         referralSource: referralSource,
- familyId: formData.familyId?.trim() || "",
-    familyEmail: formData.familyEmail?.trim() || "", 
+        familyId: formData.familyId?.trim() || "",
+        familyEmail: formData.familyEmail?.trim() || "",
         referralDetails: referralSourceOther || referral || "",
         startDate: formatDateLocal(startDate),
         endDate: formatDateLocal(toDate),
@@ -340,6 +377,12 @@ const [studentList, setStudentList] = useState([]);
         academicCoach: {
           academicCoachId: availableTimes[selectedCoachIndex].academicCoachId,
         },
+        metadata: {
+          ipAddress,
+          deviceType,
+          geoCity: geoLocation.city,
+          geoRegion: geoLocation.region
+        }
       };
 
       console.log("Form data with AC ID:", formattedData);
@@ -439,66 +482,66 @@ const [studentList, setStudentList] = useState([]);
 
   const [timeZones, setTimeZones] = useState([]);
 
-const handleFamilyIdChange = (e) => {
-  const id = e.target.value.trim();
+  const handleFamilyIdChange = (e) => {
+    const id = e.target.value.trim();
 
-  // Always store user input
-  setFormData((prev) => ({
-    ...prev,
-    familyId: id,
-  }));
-
-  if (!id) {
-    // Clear email if input cleared
+    // Always store user input
     setFormData((prev) => ({
       ...prev,
-      familyEmail: "",
+      familyId: id,
     }));
-    return;
-  }
 
-  // Check if familyId exists in student list
-  const match = studentList.find(
-    (item) => item.familyId?.toLowerCase() === id.toLowerCase()
-  );
+    if (!id) {
+      // Clear email if input cleared
+      setFormData((prev) => ({
+        ...prev,
+        familyEmail: "",
+      }));
+      return;
+    }
 
-  if (match) {
-    // Auto-fill familyEmail
+    // Check if familyId exists in student list
+    const match = studentList.find(
+      (item) => item.familyId?.toLowerCase() === id.toLowerCase()
+    );
+
+    if (match) {
+      // Auto-fill familyEmail
+      setFormData((prev) => ({
+        ...prev,
+        familyEmail: match.familyEmail || "",
+      }));
+    } else {
+      // Do NOT auto-create a familyId
+      setFormData((prev) => ({
+        ...prev,
+        familyEmail: "", // user can enter manually
+      }));
+    }
+  };
+
+
+
+  const handleFamilyEmailChange = (e) => {
     setFormData((prev) => ({
       ...prev,
-      familyEmail: match.familyEmail || "",
+      familyEmail: e.target.value
     }));
-  } else {
-    // Do NOT auto-create a familyId
-    setFormData((prev) => ({
-      ...prev,
-      familyEmail: "", // user can enter manually
-    }));
-  }
-};
-
-
-
-const handleFamilyEmailChange = (e) => {
-  setFormData((prev) => ({
-    ...prev,
-    familyEmail: e.target.value
-  }));
-};
+  };
 
 
 
 
-useEffect(() => {
-  axios.get("https://api.alfurqanapp.com/studentlist")
-.then((res) => {
-    setStudentList(res.data.students); 
-  })    .catch((err) => console.log(err));
-}, []);
-const [formData, setFormData] = useState({
-  familyId: "",
-  familyEmail: "",
-});
+  useEffect(() => {
+    axios.get("https://api.alfurqanapp.com/studentlist")
+      .then((res) => {
+        setStudentList(res.data.students);
+      }).catch((err) => console.log(err));
+  }, []);
+  const [formData, setFormData] = useState({
+    familyId: "",
+    familyEmail: "",
+  });
 
 
   return (
@@ -538,6 +581,37 @@ const [formData, setFormData] = useState({
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4">
+                <div className="col-span-1 sm:col-span-2">
+                  <label className="text-[14px] text-[#293453]">
+                    Who is this trial for?
+                  </label>
+
+                  <div className="flex gap-6 mt-2">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="trialFor"
+                        value="myself"
+                        checked={trialFor === "myself"}
+                        onChange={(e) => setTrialFor(e.target.value)}
+                        className="accent-[#293552]"
+                      />
+                      <span className="text-[13px]">Myself</span>
+                    </label>
+
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="trialFor"
+                        value="family"
+                        checked={trialFor === "family"}
+                        onChange={(e) => setTrialFor(e.target.value)}
+                        className="accent-[#293552]"
+                      />
+                      <span className="text-[13px]">Family</span>
+                    </label>
+                  </div>
+                </div>
                 <div>
                   <label
                     htmlFor="First Name"
@@ -737,71 +811,71 @@ const [formData, setFormData] = useState({
                   </select>
                 </div>
 
-               <div>
-  {/* Toggle */}
-  <div>
-    <span
-      className="flex text-sm items-center gap-2 cursor-pointer text-[#293552]"
-      onClick={() => {
-        setIsActive(!isActive);
+                <div>
+                  {/* Toggle */}
+                  <div>
+                    <span
+                      className="flex text-sm items-center gap-2 cursor-pointer text-[#293552]"
+                      onClick={() => {
+                        setIsActive(!isActive);
 
-        if (!isActive) {
-          // Switching to Family ID Mode
-          setFamilyEmail("");
-          setFamilyId("");
-        } else {
-          // Switching back to Manual Email Mode
-          setFamilyId("");
-          setFamilyEmail("");
-        }
-      }}
-    >
-      If you have Family Id (Click here)
-      {isActive ? (
-        <IoToggle size={22} className="text-[#293552]" />
-      ) : (
-        <IoToggle size={22} className="text-gray-400 rotate-180" />
-      )}
-    </span>
-  </div>
+                        if (!isActive) {
+                          // Switching to Family ID Mode
+                          setFamilyEmail("");
+                          setFamilyId("");
+                        } else {
+                          // Switching back to Manual Email Mode
+                          setFamilyId("");
+                          setFamilyEmail("");
+                        }
+                      }}
+                    >
+                      If you have Family Id (Click here)
+                      {isActive ? (
+                        <IoToggle size={22} className="text-[#293552]" />
+                      ) : (
+                        <IoToggle size={22} className="text-gray-400 rotate-180" />
+                      )}
+                    </span>
+                  </div>
 
-  {/* FAMILY ID — only when toggle ON */}
-  {isActive && (
-    <div className="mt-2">
-      <label className="text-[14px] text-[#293453]">Family Id</label>
-      <input
-        type="text"
-        placeholder="Enter Family Id"
-       value={formData.familyId}
-  onChange={handleFamilyIdChange}
-        className="w-full px-4 py-[8px] border text-[11px] rounded-lg 
+                  {/* FAMILY ID — only when toggle ON */}
+                  {isActive && (
+                    <div className="mt-2">
+                      <label className="text-[14px] text-[#293453]">Family Id</label>
+                      <input
+                        type="text"
+                        placeholder="Enter Family Id"
+                        value={formData.familyId}
+                        onChange={handleFamilyIdChange}
+                        className="w-full px-4 py-[8px] border text-[11px] rounded-lg 
         focus:outline-none focus:ring-1 focus:ring-[#293552] bg-gray-50 mb-2"
-      />
-    </div>
-  )}
+                      />
+                    </div>
+                  )}
 
-  {/* FAMILY EMAIL — Always visible, Auto-fill when toggle ON */}
-  <div className="mt-2">
-    <label className="text-[14px] text-[#293453]">Family Email Id</label>
-   <input
-  type="text"
-  placeholder="Family Email Id"
-  value={formData.familyEmail}
-  onChange={(e) =>
-    setFormData((prev) => ({
-      ...prev,
-      familyEmail: e.target.value,
-    }))
-  }
-  className="w-full px-4 py-[8px] border text-[11px] rounded-lg 
+                  {/* FAMILY EMAIL — Always visible, Auto-fill when toggle ON */}
+                  <div className="mt-2">
+                    <label className="text-[14px] text-[#293453]">Family Email Id</label>
+                    <input
+                      type="text"
+                      placeholder="Family Email Id"
+                      value={formData.familyEmail}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          familyEmail: e.target.value,
+                        }))
+                      }
+                      className="w-full px-4 py-[8px] border text-[11px] rounded-lg 
             focus:outline-none focus:ring-1 focus:ring-[#293552] bg-gray-50"
-/>
-  </div>
-</div>
+                    />
+                  </div>
+                </div>
 
 
 
-              
+
               </div>
 
 
